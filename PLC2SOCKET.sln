@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLC2SOCKET", "PLC2SOCKET\PLC2SOCKET.csproj", "{AE62558F-E72C-4FD3-AFE8-5809FFF2C179}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MES.SOCKETS", "modules\MES.SOCKETS\MES.SOCKETS.csproj", "{15CCD32B-E705-44B4-B669-A1ABE95F781A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AR.COM.DATA", "modules\MES.DATA\AR.COM.DATA.csproj", "{EBF6CB8B-FA36-423F-AAF1-D07962902061}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MES.RTBLOGGER", "modules\MES.RTBLOGGER\MES.RTBLOGGER.csproj", "{A3AC0D9E-78CC-49BC-85A6-595B60D5E5E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DUR.OPCUA", "modules\MES.OPCUA\DUR.OPCUA.csproj", "{74059705-9427-4DE9-9A42-9C1A91D36DD3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MES.CONFIG", "modules\MES.CONFIG\MES.CONFIG.csproj", "{43567911-7C03-4C87-AE55-99DAC7560922}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AE62558F-E72C-4FD3-AFE8-5809FFF2C179}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE62558F-E72C-4FD3-AFE8-5809FFF2C179}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE62558F-E72C-4FD3-AFE8-5809FFF2C179}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE62558F-E72C-4FD3-AFE8-5809FFF2C179}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15CCD32B-E705-44B4-B669-A1ABE95F781A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15CCD32B-E705-44B4-B669-A1ABE95F781A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15CCD32B-E705-44B4-B669-A1ABE95F781A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15CCD32B-E705-44B4-B669-A1ABE95F781A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBF6CB8B-FA36-423F-AAF1-D07962902061}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBF6CB8B-FA36-423F-AAF1-D07962902061}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBF6CB8B-FA36-423F-AAF1-D07962902061}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBF6CB8B-FA36-423F-AAF1-D07962902061}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3AC0D9E-78CC-49BC-85A6-595B60D5E5E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3AC0D9E-78CC-49BC-85A6-595B60D5E5E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3AC0D9E-78CC-49BC-85A6-595B60D5E5E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3AC0D9E-78CC-49BC-85A6-595B60D5E5E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74059705-9427-4DE9-9A42-9C1A91D36DD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74059705-9427-4DE9-9A42-9C1A91D36DD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74059705-9427-4DE9-9A42-9C1A91D36DD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74059705-9427-4DE9-9A42-9C1A91D36DD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43567911-7C03-4C87-AE55-99DAC7560922}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43567911-7C03-4C87-AE55-99DAC7560922}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43567911-7C03-4C87-AE55-99DAC7560922}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43567911-7C03-4C87-AE55-99DAC7560922}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {15151D2F-908B-4508-9EF3-2EBC54656FBD}
+	EndGlobalSection
+EndGlobal
