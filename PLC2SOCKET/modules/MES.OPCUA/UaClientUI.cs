@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Opc.Ua;
-using Org.BouncyCastle.Asn1.Cms;
 
 namespace DUR.OPCUA
 {

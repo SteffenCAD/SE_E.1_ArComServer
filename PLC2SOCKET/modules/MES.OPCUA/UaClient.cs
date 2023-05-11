@@ -164,6 +164,7 @@ namespace DUR.OPCUA
 
         }
 
+
         /// <summary>
         /// Open the connection with the OPC UA Server
         /// </summary>
@@ -174,7 +175,6 @@ namespace DUR.OPCUA
         /// Sets whether to try to connect to the server in case the connection is lost.
         /// </param>
         /// <exception cref="ServerException"></exception>
-
         public void Connect(uint timeOut = 5, bool keepAlive = false)
         {
             this.Disconnect();
@@ -191,6 +191,7 @@ namespace DUR.OPCUA
                 throw new ServerException("Error creating a session on the server");
             }
         }
+
 
         /// <summary>
         /// Close the connection with the OPC UA Server
@@ -248,7 +249,10 @@ namespace DUR.OPCUA
                 ReferenceDescription target = references[ii];
                 if(target.NodeClass == NodeClass.Variable)
                 {
-                    this.TagBook.Add(target);
+                    if(!TagBook.Contains(target))
+                    {
+                        this.TagBook.Add(target);
+                    }
                 }
                 else
                 {
@@ -263,7 +267,7 @@ namespace DUR.OPCUA
 
             foreach(ReferenceDescription TagAddress in this.TagBook)
             {
-                if(TagAddress.BrowseName.Name.Contains(Name))
+                if(TagAddress.BrowseName.Name.Contains(Name) || TagAddress.BrowseName.ToString() == Name)
                 {
                     retTag = TagAddress;
                     break;
@@ -284,27 +288,41 @@ namespace DUR.OPCUA
         /// Value to write
         /// </param>
         /// <exception cref="WriteException"></exception>
-        public void Write(String address, Object value)
+        public void Write(String Name, Object value)
         {
+            ReferenceDescription Tag = getTag(Name);
 
-            WriteValueCollection writeValues = new WriteValueCollection();
 
-            var writeValue = new WriteValue
+            WriteValue valueToWrite = new WriteValue();
+
+            valueToWrite.NodeId = (NodeId)Tag.NodeId;
+            valueToWrite.AttributeId = Attributes.Value;
+            valueToWrite.Value.Value = value;
+            valueToWrite.Value.StatusCode = StatusCodes.Good;
+            valueToWrite.Value.ServerTimestamp = DateTime.MinValue;
+            valueToWrite.Value.SourceTimestamp = DateTime.MinValue;
+
+            WriteValueCollection valuesToWrite = new WriteValueCollection();
+            valuesToWrite.Add(valueToWrite);
+
+            // write current value.
+            StatusCodeCollection results = null;
+            DiagnosticInfoCollection diagnosticInfos = null;
+
+            this.Session.Write(
+                null,
+                valuesToWrite,
+                out results,
+                out diagnosticInfos);
+
+            ClientBase.ValidateResponse(results, valuesToWrite);
+            ClientBase.ValidateDiagnosticInfos(diagnosticInfos, valuesToWrite);
+
+            if (StatusCode.IsBad(results[0]))
             {
-                NodeId = new NodeId(address, 2),
-                AttributeId = Attributes.Value,
-                Value = new DataValue()
-            };
-            writeValue.Value.Value = value;
-            writeValues.Add(writeValue);
-            this.Session.Write(null, writeValues, out StatusCodeCollection statusCodes, out DiagnosticInfoCollection diagnosticInfo);
-            if (!StatusCode.IsGood(statusCodes[0]))
-            {
-                throw new WriteException("Error writing value. Code: " + statusCodes[0].Code.ToString());
+                throw new ServiceResultException(results[0]);
             }
         }
-
-
 
         /// <summary>
         /// Write a value on a tag
@@ -326,68 +344,34 @@ namespace DUR.OPCUA
         /// <returns>
         /// <see cref="Tag"/>
         /// </returns>
-        public Tag Read(String address)
+        public object Read(String Name)
         {
+            ReferenceDescription Tag = getTag(Name);
 
-            var tag = new Tag
-            {
-                Address = address,
-                Value = null,
-            };
+            ReadValueId nodeToRead  = new ReadValueId();
+            nodeToRead.NodeId       = (NodeId)Tag.NodeId;
+            nodeToRead.AttributeId  = Attributes.Value;
 
+            ReadValueIdCollection nodesToRead = new ReadValueIdCollection();
+            nodesToRead.Add(nodeToRead);
 
-            ReadValueIdCollection readValues = new ReadValueIdCollection()
-            {
-                new ReadValueId
-                {
-                    NodeId = new NodeId(address, 2),
-                    AttributeId = Attributes.Value
-                }
-            };
+            // read current value.
+            DataValueCollection results = null;
+            DiagnosticInfoCollection diagnosticInfos = null;
 
-            this.Session.Read(null, 0, TimestampsToReturn.Both, readValues, out DataValueCollection dataValues, out DiagnosticInfoCollection diagnosticInfo);
+            this.Session.Read(
+                null,
+                0,
+                TimestampsToReturn.Neither,
+                nodesToRead,
+                out results,
+                out diagnosticInfos);
 
-
-            tag.Value = dataValues[0].Value;
-            tag.Code = dataValues[0].StatusCode;
-            return tag;
-        }
-
-
-        /// <summary>
-        /// Read a tag of the sepecific address
-        /// </summary>
-        /// <param name="address">
-        /// Address of the tag
-        /// </param>
-        /// <returns>
-        /// <see cref="Tag"/>
-        /// </returns>
-        public Tag Read(String address, ushort namespaceIndex = 2)
-        {
-
-            var tag = new Tag
-            {
-                Address = address,
-                Value = null,
-            };
+            ClientBase.ValidateResponse(results, nodesToRead);
+            ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToRead);
 
 
-            ReadValueIdCollection readValues = new ReadValueIdCollection()
-            {
-                new ReadValueId
-                {
-                    NodeId = new NodeId(address, namespaceIndex),
-                    AttributeId = Attributes.Value
-                }
-            };
-
-            this.Session.Read(null, 0, TimestampsToReturn.Both, readValues, out DataValueCollection dataValues, out DiagnosticInfoCollection diagnosticInfo);
-
-
-            tag.Value = dataValues[0].Value;
-            tag.Code = dataValues[0].StatusCode;
-            return tag;
+            return results[0].Value;
         }
 
 
@@ -472,11 +456,13 @@ namespace DUR.OPCUA
         /// <param name="monitor">
         /// Function to execute when the value changes.
         /// </param>
-        public void Monitoring(String address, int miliseconds, MonitoredItemNotificationEventHandler monitor)
+        public void Monitoring(String Name, int miliseconds, MonitoredItemNotificationEventHandler monitor)
         {
+            ReferenceDescription Tag = getTag(Name);
+
             var subscription = this.Subscription(miliseconds);
             MonitoredItem monitored = new MonitoredItem();
-            monitored.StartNodeId = new NodeId(address, 2);
+            monitored.StartNodeId = (NodeId)Tag.NodeId;
             monitored.AttributeId = Attributes.Value;
             monitored.Notification += monitor;
             subscription.AddItem(monitored);
@@ -558,8 +544,6 @@ namespace DUR.OPCUA
             }
             return continuationPoints;
         }
-
-
 
 
         /// <summary>

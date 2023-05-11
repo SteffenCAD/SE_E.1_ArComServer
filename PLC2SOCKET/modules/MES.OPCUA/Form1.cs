@@ -28,15 +28,18 @@ namespace DUR.OPCUA
         public Form1()
         {
             InitializeComponent();
+
+            TbServerAddress.Text    = "opc.tcp://192.168.0.1:4840";
+            CbSecurity.Checked      = false;
+            CbUntrusted.Checked     = true;
+
         }
 
         public void createSession()
         {
             try
             {
-                //client = new UaClient("test", "opc.tcp://desktop-e7rdrqt:51210/UA/SampleServer", true, true);
-                //client = new UaClient("test", "opc.tcp://192.168.0.1:4840", false, true);
-                OpcClient = new UaClient("OPCuaTestApp", "opc.tcp://wem1-l07476:62640/IntegrationObjects/ServerSimulator", false, true);
+                OpcClient = new UaClient("test", TbServerAddress.Text, CbSecurity.Checked, CbUntrusted.Checked);
                 
                 uint timeOut = 30;
                 OpcClient.Connect(timeOut, true);
@@ -54,13 +57,10 @@ namespace DUR.OPCUA
 
         public void readTag()
         {
-            OPCUaClient.Objects.Tag tag  = new OPCUaClient.Objects.Tag();
-
             try
             {
-                //tag = OpcClient.Read(TbTagName.Text);
-                tag = OpcClient.Read(TbTagName.Text, (ushort)NudNamespace.Value);
-                TbTagValue.Text = tag.Value.ToString();
+                TbTagValue.Text = OpcClient.Read(TbTagName.Text).ToString();
+
             }
             catch { }
         }
@@ -69,34 +69,36 @@ namespace DUR.OPCUA
         {
             try
             {
-                object tagValue = TbWriteValue.Text;
-                OpcClient.Write(TbTagName.Text, tagValue);
+                OpcClient.Write(TbTagName.Text, bool.Parse(TbTagValue.Text));
             }
             catch { }
         }
 
         public void monitorTag()
         {
-            Console.WriteLine("test");
-            OpcClient.Monitoring(TbTagName.Text, 200, (_, e) =>
-            {
-                MonitoredItemNotification value = (MonitoredItemNotification)e.NotificationValue;
-               
-                Console.WriteLine(value.Value.ToString());
-                //TbTagValue.Text = value.ToString();
-            });
+            OpcClient.Monitoring(TbTagName.Text,200, MonitoringHandler);
         }
 
-        public void getTags()
+        public void MonitoringHandler(MonitoredItem Item, MonitoredItemNotificationEventArgs args)
         {
-            List<OPCUaClient.Objects.Tag> tags = new List<OPCUaClient.Objects.Tag>();
 
-            try
+            //MonitoredItemNotification value = (MonitoredItemNotification)args.NotificationValue;
+
+            if (LbMonitoring.InvokeRequired)
             {
-                tags = OpcClient.Tags("Realtimedata");
-
+                LbMonitoring.BeginInvoke(new Action(delegate {
+                    MonitoringHandler(Item, args);
+                }));
+                return;
             }
-            catch { }
+
+            var monitored = (MonitoredItemNotification)args.NotificationValue;
+
+            NodeId id = (NodeId)Item.StartNodeId;
+            
+
+
+            LbMonitoring.Text = id.Identifier.ToString() + " | " + monitored.Value.ToString();
         }
 
         private void BtnConnect_Click(object sender, EventArgs e)
@@ -109,11 +111,6 @@ namespace DUR.OPCUA
             readTag();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void BtnWrite_Click(object sender, EventArgs e)
         {
             wirteTag();
@@ -124,31 +121,50 @@ namespace DUR.OPCUA
             monitorTag();
         }
 
-        private void BtnScan_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var groups = OpcClient.Groups("Device", true);
-                var tags = OpcClient.Tags("opc.tcp://desktop-e7rdrqt:62640");
-                //Or
-                //tags = await client.TagsAsync("Device.Counter");
-
-                foreach (var tag in tags)
-                {
-                    Console.WriteLine($"Name: {tag.Name}");
-                    Console.WriteLine($"Address: {tag.Address}");
-                }
-            }
-            catch(Exception ex)
-            {
-                e = e; 
-            }
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
             OpcClient.ScanTags(ObjectIds.ObjectsFolder);
-            OpcClient.getTag("Tag1");
+            
+            foreach(ReferenceDescription Tag in OpcClient.TagBook)
+            {
+                TreeNode TN = new TreeNode();
+                TN.Text = Tag.BrowseName.ToString();
+
+                TvScannedTags.Nodes.Add(TN);
+            }
+        }
+
+        private void TmBackground_Tick(object sender, EventArgs e)
+        {
+            if(OpcClient != null)
+            {
+                if(OpcClient.IsConnected)
+                {
+                    LbState.Text = "CONNECTED";
+                    LbState.ForeColor = Color.Green;
+                }
+                else
+                {
+                    LbState.Text = "DISCONNECTED";
+                    LbState.ForeColor = Color.Red;
+                }
+            }
+            else
+            {
+                LbState.Text = "DISCONNECTED";
+                LbState.ForeColor = Color.Red;
+            }
+        }
+
+        private void TvScannedTags_DoubleClick(object sender, EventArgs e)
+        {
+            TreeNode selectedNode = TvScannedTags.SelectedNode;
+            TbTagName.Text = selectedNode.Text;
+        }
+
+        private void BtnDisconnect_Click(object sender, EventArgs e)
+        {
+            OpcClient.Disconnect();
         }
     }
 }
