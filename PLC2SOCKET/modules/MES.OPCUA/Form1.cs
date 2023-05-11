@@ -1,4 +1,5 @@
-﻿using System;
+﻿//https://github.com/joc-luis/OPCUaClient/blob/master/README.md
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,8 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-//https://github.com/joc-luis/OPCUaClient/blob/master/README.md
-using Opc.Ua;using Opc.Ua.Client;
+using Opc.Ua;
+using Opc.Ua.Client;
 using OPCUaClient.Objects;
 using OPCUaClient.Exceptions;
 using Opc.Ua.Configuration;
@@ -19,7 +20,7 @@ namespace DUR.OPCUA
 {
     public partial class Form1 : Form
     {
-        public UaClient client;
+        public UaClient OpcClient;
 
         public UaUi ui = new UaUi();
 
@@ -34,11 +35,13 @@ namespace DUR.OPCUA
             try
             {
                 //client = new UaClient("test", "opc.tcp://desktop-e7rdrqt:51210/UA/SampleServer", true, true);
-                client = new UaClient("test", "opc.tcp://192.168.0.1:4840", false, true);
+                //client = new UaClient("test", "opc.tcp://192.168.0.1:4840", false, true);
+                OpcClient = new UaClient("OPCuaTestApp", "opc.tcp://wem1-l07476:62640/IntegrationObjects/ServerSimulator", false, true);
+                
                 uint timeOut = 30;
-                client.Connect(timeOut, true);
+                OpcClient.Connect(timeOut, true);
 
-                ui.connect(client,treeView1,listView1);
+                ui.connect(OpcClient, treeView1,listView1);
 
             }
             catch
@@ -55,7 +58,8 @@ namespace DUR.OPCUA
 
             try
             {
-                tag = client.Read(TbTagName.Text);
+                //tag = OpcClient.Read(TbTagName.Text);
+                tag = OpcClient.Read(TbTagName.Text, (ushort)NudNamespace.Value);
                 TbTagValue.Text = tag.Value.ToString();
             }
             catch { }
@@ -66,7 +70,7 @@ namespace DUR.OPCUA
             try
             {
                 object tagValue = TbWriteValue.Text;
-                client.Write(TbTagName.Text, tagValue);
+                OpcClient.Write(TbTagName.Text, tagValue);
             }
             catch { }
         }
@@ -74,7 +78,7 @@ namespace DUR.OPCUA
         public void monitorTag()
         {
             Console.WriteLine("test");
-            client.Monitoring(TbTagName.Text, 200, (_, e) =>
+            OpcClient.Monitoring(TbTagName.Text, 200, (_, e) =>
             {
                 MonitoredItemNotification value = (MonitoredItemNotification)e.NotificationValue;
                
@@ -89,7 +93,7 @@ namespace DUR.OPCUA
 
             try
             {
-                tags = client.Tags("Realtimedata");
+                tags = OpcClient.Tags("Realtimedata");
 
             }
             catch { }
@@ -124,8 +128,8 @@ namespace DUR.OPCUA
         {
             try
             {
-                var groups = client.Groups("Device", true);
-                var tags = client.Tags("opc.tcp://desktop-e7rdrqt:62640");
+                var groups = OpcClient.Groups("Device", true);
+                var tags = OpcClient.Tags("opc.tcp://desktop-e7rdrqt:62640");
                 //Or
                 //tags = await client.TagsAsync("Device.Counter");
 
@@ -139,6 +143,12 @@ namespace DUR.OPCUA
             {
                 e = e; 
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            OpcClient.ScanTags(ObjectIds.ObjectsFolder);
+            OpcClient.getTag("Tag1");
         }
     }
 }

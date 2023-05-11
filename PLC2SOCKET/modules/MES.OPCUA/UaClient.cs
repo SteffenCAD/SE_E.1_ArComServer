@@ -37,6 +37,11 @@ namespace DUR.OPCUA
 
         #region Public fields
         /// <summary>
+        /// will store all Tags after scan command
+        /// </summary>
+        public List<ReferenceDescription> TagBook = new List<ReferenceDescription>();
+
+        /// <summary>
         /// Indicates if the instance is connected to the server.
         /// </summary>
         public bool IsConnected
@@ -208,6 +213,66 @@ namespace DUR.OPCUA
             }
         }
 
+        public void ScanTags(NodeId sourceId)
+        {
+            // find all of the components of the node.
+            BrowseDescription nodeToBrowse1 = new BrowseDescription();
+
+            nodeToBrowse1.NodeId = sourceId;
+            nodeToBrowse1.BrowseDirection = BrowseDirection.Forward;
+            nodeToBrowse1.ReferenceTypeId = ReferenceTypeIds.Aggregates;
+            nodeToBrowse1.IncludeSubtypes = true;
+            nodeToBrowse1.NodeClassMask = (uint)(NodeClass.Object | NodeClass.Variable);
+            nodeToBrowse1.ResultMask = (uint)BrowseResultMask.All;
+
+            // find all nodes organized by the node.
+            BrowseDescription nodeToBrowse2 = new BrowseDescription();
+
+            nodeToBrowse2.NodeId = sourceId;
+            nodeToBrowse2.BrowseDirection = BrowseDirection.Forward;
+            nodeToBrowse2.ReferenceTypeId = ReferenceTypeIds.Organizes;
+            nodeToBrowse2.IncludeSubtypes = true;
+            nodeToBrowse2.NodeClassMask = (uint)(NodeClass.Object | NodeClass.Variable);
+            nodeToBrowse2.ResultMask = (uint)BrowseResultMask.All;
+
+            BrowseDescriptionCollection nodesToBrowse = new BrowseDescriptionCollection();
+            nodesToBrowse.Add(nodeToBrowse1);
+            nodesToBrowse.Add(nodeToBrowse2);
+
+            // fetch references from the server.
+            ReferenceDescriptionCollection references = UaClientUI_utils.Browse(this.Session, nodesToBrowse, false);
+
+            // process results.
+            for (int ii = 0; ii < references.Count; ii++)
+            {
+                ReferenceDescription target = references[ii];
+                if(target.NodeClass == NodeClass.Variable)
+                {
+                    this.TagBook.Add(target);
+                }
+                else
+                {
+                    this.ScanTags((NodeId)target.NodeId);
+                }
+            }
+        }
+
+        public ReferenceDescription getTag(string Name)
+        {
+            ReferenceDescription retTag = null;
+
+            foreach(ReferenceDescription TagAddress in this.TagBook)
+            {
+                if(TagAddress.BrowseName.Name.Contains(Name))
+                {
+                    retTag = TagAddress;
+                    break;
+                }
+            }
+
+            return retTag;
+        }
+
 
         /// <summary>
         /// Write a value on a tag
@@ -275,7 +340,7 @@ namespace DUR.OPCUA
             {
                 new ReadValueId
                 {
-                    NodeId = new NodeId(address, 4),
+                    NodeId = new NodeId(address, 2),
                     AttributeId = Attributes.Value
                 }
             };
@@ -288,6 +353,42 @@ namespace DUR.OPCUA
             return tag;
         }
 
+
+        /// <summary>
+        /// Read a tag of the sepecific address
+        /// </summary>
+        /// <param name="address">
+        /// Address of the tag
+        /// </param>
+        /// <returns>
+        /// <see cref="Tag"/>
+        /// </returns>
+        public Tag Read(String address, ushort namespaceIndex = 2)
+        {
+
+            var tag = new Tag
+            {
+                Address = address,
+                Value = null,
+            };
+
+
+            ReadValueIdCollection readValues = new ReadValueIdCollection()
+            {
+                new ReadValueId
+                {
+                    NodeId = new NodeId(address, namespaceIndex),
+                    AttributeId = Attributes.Value
+                }
+            };
+
+            this.Session.Read(null, 0, TimestampsToReturn.Both, readValues, out DataValueCollection dataValues, out DiagnosticInfoCollection diagnosticInfo);
+
+
+            tag.Value = dataValues[0].Value;
+            tag.Code = dataValues[0].StatusCode;
+            return tag;
+        }
 
 
         /// <summary>
@@ -399,6 +500,7 @@ namespace DUR.OPCUA
             Browser browser = new Browser(this.Session);
             browser.BrowseDirection = BrowseDirection.Forward;
             browser.NodeClassMask = (int)NodeClass.Object | (int)NodeClass.Variable;
+            //browser.ReferenceTypeId = ReferenceTypeIds.HierarchicalReferences;
             browser.ReferenceTypeId = ReferenceTypeIds.HierarchicalReferences;
 
             ReferenceDescriptionCollection browseResults = browser.Browse(Opc.Ua.ObjectIds.ObjectsFolder);
@@ -474,11 +576,48 @@ namespace DUR.OPCUA
         /// </returns>
         public List<Group> Groups(String address, bool recursive = false)
         {
+
             var groups = new List<Group>();
-            Browser browser = new Browser(this.Session);
+
+            // find all nodes organized by the node.
+            BrowseDescription nodeToBrowse2 = new BrowseDescription();
+
+            nodeToBrowse2.NodeId = new NodeId(address, 2);
+            nodeToBrowse2.BrowseDirection = BrowseDirection.Forward;
+            nodeToBrowse2.ReferenceTypeId = ReferenceTypeIds.Organizes;
+            nodeToBrowse2.IncludeSubtypes = true;
+            nodeToBrowse2.NodeClassMask = (uint)(NodeClass.Object | NodeClass.Variable);
+            nodeToBrowse2.ResultMask = (uint)BrowseResultMask.All;
+
+            BrowseDescriptionCollection nodesToBrowse = new BrowseDescriptionCollection();
+            nodesToBrowse.Add(nodeToBrowse2);
+
+            // start the browse operation.
+            BrowseResultCollection results = null;
+            DiagnosticInfoCollection diagnosticInfos = null;
+
+            Session.Browse(
+                null,
+                null,
+                0,
+                nodesToBrowse,
+                out results,
+                out diagnosticInfos);
+
+            //ClientBase.ValidateResponse(results, nodesToBrowse);
+            //ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToBrowse);
+
+
+
+
+
+
+            Browser browser         = new Browser(this.Session);
             browser.BrowseDirection = BrowseDirection.Forward;
-            browser.NodeClassMask = (int)NodeClass.Object | (int)NodeClass.Variable;
-            browser.ReferenceTypeId = ReferenceTypeIds.HierarchicalReferences;
+            browser.ReferenceTypeId = ReferenceTypeIds.Organizes;
+            browser.NodeClassMask   = (int)NodeClass.Object | (int)NodeClass.Variable;
+            browser.ResultMask      = (uint)BrowseResultMask.All;
+
 
             ReferenceDescriptionCollection browseResults = browser.Browse(new NodeId(address, 2));
             foreach (var result in browseResults)

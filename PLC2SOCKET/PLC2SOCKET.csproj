@@ -80,23 +80,23 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\modules\MES.CONFIG\MES.CONFIG.csproj">
+    <ProjectReference Include="modules\MES.CONFIG\MES.CONFIG.csproj">
       <Project>{43567911-7c03-4c87-ae55-99dac7560922}</Project>
       <Name>MES.CONFIG</Name>
     </ProjectReference>
-    <ProjectReference Include="..\modules\MES.DATA\AR.COM.DATA.csproj">
+    <ProjectReference Include="modules\MES.DATA\AR.COM.DATA.csproj">
       <Project>{ebf6cb8b-fa36-423f-aaf1-d07962902061}</Project>
       <Name>AR.COM.DATA</Name>
     </ProjectReference>
-    <ProjectReference Include="..\modules\MES.OPCUA\DUR.OPCUA.csproj">
+    <ProjectReference Include="modules\MES.OPCUA\DUR.OPCUA.csproj">
       <Project>{74059705-9427-4de9-9a42-9c1a91d36dd3}</Project>
       <Name>DUR.OPCUA</Name>
     </ProjectReference>
-    <ProjectReference Include="..\modules\MES.RTBLOGGER\MES.RTBLOGGER.csproj">
+    <ProjectReference Include="modules\MES.RTBLOGGER\MES.RTBLOGGER.csproj">
       <Project>{a3ac0d9e-78cc-49bc-85a6-595b60d5e5e7}</Project>
       <Name>MES.RTBLOGGER</Name>
     </ProjectReference>
-    <ProjectReference Include="..\modules\MES.SOCKETS\MES.SOCKETS.csproj">
+    <ProjectReference Include="modules\MES.SOCKETS\MES.SOCKETS.csproj">
       <Project>{15ccd32b-e705-44b4-b669-a1abe95f781a}</Project>
       <Name>MES.SOCKETS</Name>
     </ProjectReference>

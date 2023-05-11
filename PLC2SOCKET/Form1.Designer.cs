@@ -35,13 +35,19 @@
             this.TpUnityCon = new System.Windows.Forms.TabPage();
             this.TpOPCua = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.BrowseNodesTV = new System.Windows.Forms.TreeView();
             this.AttributesLV = new System.Windows.Forms.ListView();
             this.AttributeNameCH = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.AttributeDataTypeCH = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.AttributeValueCH = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.LbConnectionState = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.BtnDisconnect = new System.Windows.Forms.Button();
+            this.BtnConnect = new System.Windows.Forms.Button();
+            this.TbOpcAddress = new System.Windows.Forms.TextBox();
             this.TpSettings = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -49,30 +55,24 @@
             this.BtnSettingsSave = new System.Windows.Forms.Button();
             this.BtnSettingsLoad = new System.Windows.Forms.Button();
             this.PgSettings = new System.Windows.Forms.PropertyGrid();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.TbOpcAddress = new System.Windows.Forms.TextBox();
-            this.BtnConnect = new System.Windows.Forms.Button();
-            this.BtnDisconnect = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.LbConnectionState = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.TpUnityCon.SuspendLayout();
             this.TpOPCua.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
+            this.splitContainer3.Panel1.SuspendLayout();
+            this.splitContainer3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
-            this.splitContainer3.Panel1.SuspendLayout();
-            this.splitContainer3.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.TpSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // RtbLog
@@ -118,7 +118,7 @@
             this.tabControl1.Margin = new System.Windows.Forms.Padding(4);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1179, 509);
+            this.tabControl1.Size = new System.Drawing.Size(1304, 565);
             this.tabControl1.TabIndex = 14;
             // 
             // TpUnityCon
@@ -130,7 +130,7 @@
             this.TpUnityCon.Margin = new System.Windows.Forms.Padding(4);
             this.TpUnityCon.Name = "TpUnityCon";
             this.TpUnityCon.Padding = new System.Windows.Forms.Padding(4);
-            this.TpUnityCon.Size = new System.Drawing.Size(1171, 573);
+            this.TpUnityCon.Size = new System.Drawing.Size(1171, 480);
             this.TpUnityCon.TabIndex = 0;
             this.TpUnityCon.Text = "UnityConnection";
             this.TpUnityCon.UseVisualStyleBackColor = true;
@@ -140,7 +140,7 @@
             this.TpOPCua.Controls.Add(this.tableLayoutPanel3);
             this.TpOPCua.Location = new System.Drawing.Point(4, 25);
             this.TpOPCua.Name = "TpOPCua";
-            this.TpOPCua.Size = new System.Drawing.Size(1171, 480);
+            this.TpOPCua.Size = new System.Drawing.Size(1296, 536);
             this.TpOPCua.TabIndex = 2;
             this.TpOPCua.Text = "OPCua";
             this.TpOPCua.UseVisualStyleBackColor = true;
@@ -160,8 +160,24 @@
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.75485F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 83.24515F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(1165, 474);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(1290, 530);
             this.tableLayoutPanel3.TabIndex = 0;
+            // 
+            // splitContainer3
+            // 
+            this.splitContainer3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainer3.Location = new System.Drawing.Point(3, 91);
+            this.splitContainer3.Name = "splitContainer3";
+            this.splitContainer3.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer3.Panel1
+            // 
+            this.splitContainer3.Panel1.Controls.Add(this.splitContainer2);
+            this.splitContainer3.Size = new System.Drawing.Size(1284, 436);
+            this.splitContainer3.SplitterDistance = 283;
+            this.splitContainer3.TabIndex = 1;
             // 
             // splitContainer2
             // 
@@ -178,8 +194,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.AttributesLV);
-            this.splitContainer2.Size = new System.Drawing.Size(1153, 247);
-            this.splitContainer2.SplitterDistance = 483;
+            this.splitContainer2.Size = new System.Drawing.Size(1278, 277);
+            this.splitContainer2.SplitterDistance = 535;
             this.splitContainer2.TabIndex = 0;
             // 
             // BrowseNodesTV
@@ -189,7 +205,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.BrowseNodesTV.Location = new System.Drawing.Point(3, 3);
             this.BrowseNodesTV.Name = "BrowseNodesTV";
-            this.BrowseNodesTV.Size = new System.Drawing.Size(477, 241);
+            this.BrowseNodesTV.Size = new System.Drawing.Size(529, 271);
             this.BrowseNodesTV.TabIndex = 0;
             // 
             // AttributesLV
@@ -204,7 +220,7 @@
             this.AttributesLV.HideSelection = false;
             this.AttributesLV.Location = new System.Drawing.Point(3, 3);
             this.AttributesLV.Name = "AttributesLV";
-            this.AttributesLV.Size = new System.Drawing.Size(660, 241);
+            this.AttributesLV.Size = new System.Drawing.Size(733, 271);
             this.AttributesLV.TabIndex = 0;
             this.AttributesLV.UseCompatibleStateImageBehavior = false;
             this.AttributesLV.View = System.Windows.Forms.View.Details;
@@ -226,21 +242,66 @@
             this.AttributeValueCH.Text = "Value";
             this.AttributeValueCH.Width = 208;
             // 
-            // splitContainer3
+            // panel1
             // 
-            this.splitContainer3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer3.Location = new System.Drawing.Point(3, 82);
-            this.splitContainer3.Name = "splitContainer3";
-            this.splitContainer3.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.panel1.Controls.Add(this.LbConnectionState);
+            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.BtnDisconnect);
+            this.panel1.Controls.Add(this.BtnConnect);
+            this.panel1.Controls.Add(this.TbOpcAddress);
+            this.panel1.Location = new System.Drawing.Point(3, 3);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1284, 82);
+            this.panel1.TabIndex = 2;
             // 
-            // splitContainer3.Panel1
+            // LbConnectionState
             // 
-            this.splitContainer3.Panel1.Controls.Add(this.splitContainer2);
-            this.splitContainer3.Size = new System.Drawing.Size(1159, 389);
-            this.splitContainer3.SplitterDistance = 253;
-            this.splitContainer3.TabIndex = 1;
+            this.LbConnectionState.AutoSize = true;
+            this.LbConnectionState.Location = new System.Drawing.Point(639, 6);
+            this.LbConnectionState.Name = "LbConnectionState";
+            this.LbConnectionState.Size = new System.Drawing.Size(116, 17);
+            this.LbConnectionState.TabIndex = 4;
+            this.LbConnectionState.Text = "DISCONNECTED";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(568, 6);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(67, 17);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "STATUS:";
+            // 
+            // BtnDisconnect
+            // 
+            this.BtnDisconnect.Location = new System.Drawing.Point(429, 3);
+            this.BtnDisconnect.Name = "BtnDisconnect";
+            this.BtnDisconnect.Size = new System.Drawing.Size(103, 23);
+            this.BtnDisconnect.TabIndex = 2;
+            this.BtnDisconnect.Text = "disconnect";
+            this.BtnDisconnect.UseVisualStyleBackColor = true;
+            this.BtnDisconnect.Click += new System.EventHandler(this.BtnDisconnect_Click);
+            // 
+            // BtnConnect
+            // 
+            this.BtnConnect.Location = new System.Drawing.Point(320, 3);
+            this.BtnConnect.Name = "BtnConnect";
+            this.BtnConnect.Size = new System.Drawing.Size(103, 23);
+            this.BtnConnect.TabIndex = 1;
+            this.BtnConnect.Text = "connect";
+            this.BtnConnect.UseVisualStyleBackColor = true;
+            this.BtnConnect.Click += new System.EventHandler(this.BtnConnect_Click);
+            // 
+            // TbOpcAddress
+            // 
+            this.TbOpcAddress.Location = new System.Drawing.Point(6, 3);
+            this.TbOpcAddress.Name = "TbOpcAddress";
+            this.TbOpcAddress.Size = new System.Drawing.Size(308, 22);
+            this.TbOpcAddress.TabIndex = 0;
+            this.TbOpcAddress.Text = "opc.tcp://127.0.0.1:4840";
             // 
             // TpSettings
             // 
@@ -249,7 +310,7 @@
             this.TpSettings.Margin = new System.Windows.Forms.Padding(4);
             this.TpSettings.Name = "TpSettings";
             this.TpSettings.Padding = new System.Windows.Forms.Padding(4);
-            this.TpSettings.Size = new System.Drawing.Size(1171, 573);
+            this.TpSettings.Size = new System.Drawing.Size(1171, 480);
             this.TpSettings.TabIndex = 1;
             this.TpSettings.Text = "Settings";
             this.TpSettings.UseVisualStyleBackColor = true;
@@ -336,72 +397,11 @@
             this.PgSettings.Size = new System.Drawing.Size(557, 514);
             this.PgSettings.TabIndex = 0;
             // 
-            // panel1
-            // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.Controls.Add(this.LbConnectionState);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.BtnDisconnect);
-            this.panel1.Controls.Add(this.BtnConnect);
-            this.panel1.Controls.Add(this.TbOpcAddress);
-            this.panel1.Location = new System.Drawing.Point(3, 3);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1159, 73);
-            this.panel1.TabIndex = 2;
-            // 
-            // TbOpcAddress
-            // 
-            this.TbOpcAddress.Location = new System.Drawing.Point(6, 3);
-            this.TbOpcAddress.Name = "TbOpcAddress";
-            this.TbOpcAddress.Size = new System.Drawing.Size(308, 22);
-            this.TbOpcAddress.TabIndex = 0;
-            this.TbOpcAddress.Text = "opc.tcp://127.0.0.1:4840";
-            // 
-            // BtnConnect
-            // 
-            this.BtnConnect.Location = new System.Drawing.Point(320, 3);
-            this.BtnConnect.Name = "BtnConnect";
-            this.BtnConnect.Size = new System.Drawing.Size(103, 23);
-            this.BtnConnect.TabIndex = 1;
-            this.BtnConnect.Text = "connect";
-            this.BtnConnect.UseVisualStyleBackColor = true;
-            this.BtnConnect.Click += new System.EventHandler(this.BtnConnect_Click);
-            // 
-            // BtnDisconnect
-            // 
-            this.BtnDisconnect.Location = new System.Drawing.Point(429, 3);
-            this.BtnDisconnect.Name = "BtnDisconnect";
-            this.BtnDisconnect.Size = new System.Drawing.Size(103, 23);
-            this.BtnDisconnect.TabIndex = 2;
-            this.BtnDisconnect.Text = "disconnect";
-            this.BtnDisconnect.UseVisualStyleBackColor = true;
-            this.BtnDisconnect.Click += new System.EventHandler(this.BtnDisconnect_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(568, 6);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 16);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "STATUS:";
-            // 
-            // LbConnectionState
-            // 
-            this.LbConnectionState.AutoSize = true;
-            this.LbConnectionState.Location = new System.Drawing.Point(639, 6);
-            this.LbConnectionState.Name = "LbConnectionState";
-            this.LbConnectionState.Size = new System.Drawing.Size(114, 16);
-            this.LbConnectionState.TabIndex = 4;
-            this.LbConnectionState.Text = "DISCONNECTED";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1187, 530);
+            this.ClientSize = new System.Drawing.Size(1312, 584);
             this.Controls.Add(this.tabControl1);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
@@ -412,21 +412,21 @@
             this.TpUnityCon.PerformLayout();
             this.TpOPCua.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
+            this.splitContainer3.Panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
+            this.splitContainer3.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            this.splitContainer3.Panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
-            this.splitContainer3.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.TpSettings.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }

@@ -92,10 +92,12 @@ namespace PLC2SOCKET
             //check if OpcClient is not connected 
             if(OpcClient == null)
             {
-                OpcClient = new UaClient("ARcomServer","opc.tcp://192.168.0.1:4840",false,true);
+                OpcClient = new UaClient("ARcomServer", "opc.tcp://wem1-l07476:62640/IntegrationObjects/ServerSimulator", false,true);
                 OpcClient.Connect();
 
                 OpcUi.connect(OpcClient, BrowseNodesTV, AttributesLV);
+
+                
 
 
                 OpcClient.Read("AR_alive");
