@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace PLC2SOCKET
+namespace DUR.RTBLOGGER
 {
     internal static class Program
     {
@@ -16,7 +16,7 @@ namespace PLC2SOCKET
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrmMainPlc2Socket());
+            Application.Run(new Form1());
         }
     }
 }

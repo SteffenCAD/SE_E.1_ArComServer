@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AE62558F-E72C-4FD3-AFE8-5809FFF2C179}</ProjectGuid>
+    <ProjectGuid>{15CCD32B-E705-44B4-B669-A1ABE95F781A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>PLC2SOCKET</RootNamespace>
-    <AssemblyName>PLC2SOCKET</AssemblyName>
+    <RootNamespace>DUR.SOCKETS</RootNamespace>
+    <AssemblyName>DUR.SOCKETS</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -46,19 +46,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DATA\AR.COM.DATA.cs" />
-    <Compile Include="DATA\AR.COM.SETTINGS.cs" />
-    <Compile Include="DATA\MES.DATA.JSONparser.cs" />
-    <Compile Include="FrmMainPlc2Socket.cs">
+    <Compile Include="FrmMainDur.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmMainPlc2Socket.Designer.cs">
-      <DependentUpon>FrmMainPlc2Socket.cs</DependentUpon>
+    <Compile Include="FrmMainDur.Designer.cs">
+      <DependentUpon>FrmMainDur.cs</DependentUpon>
     </Compile>
+    <Compile Include="DUR.SOCKETS.EVENT.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FrmMainPlc2Socket.resx">
-      <DependentUpon>FrmMainPlc2Socket.cs</DependentUpon>
+    <Compile Include="DUR.SOCKETS.cs" />
+    <EmbeddedResource Include="FrmMainDur.resx">
+      <DependentUpon>FrmMainDur.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -68,6 +67,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -83,21 +83,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DUR.MODULES\DUR.CONFIG\DUR.CONFIG.csproj">
-      <Project>{43567911-7c03-4c87-ae55-99dac7560922}</Project>
-      <Name>DUR.CONFIG</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DUR.MODULES\DUR.OPCUA\DUR.OPCUA.csproj">
-      <Project>{74059705-9427-4de9-9a42-9c1a91d36dd3}</Project>
-      <Name>DUR.OPCUA</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DUR.MODULES\DUR.RTBLOGGER\DUR.RTBLOGGER.csproj">
+    <ProjectReference Include="..\DUR.RTBLOGGER\DUR.RTBLOGGER.csproj">
       <Project>{a3ac0d9e-78cc-49bc-85a6-595b60d5e5e7}</Project>
       <Name>DUR.RTBLOGGER</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DUR.MODULES\DUR.SOCKETS\DUR.SOCKETS.csproj">
-      <Project>{15ccd32b-e705-44b4-b669-a1abe95f781a}</Project>
-      <Name>DUR.SOCKETS</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

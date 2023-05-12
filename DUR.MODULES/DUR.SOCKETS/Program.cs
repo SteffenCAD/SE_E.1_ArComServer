@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace PLC2SOCKET
+namespace DUR.SOCKETS
 {
-    internal static class Program
+    static class Program
     {
         /// <summary>
         /// Der Haupteinstiegspunkt für die Anwendung.
@@ -16,7 +16,7 @@ namespace PLC2SOCKET
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrmMainPlc2Socket());
+            Application.Run(new FrmMainDur());
         }
     }
 }
