@@ -56,6 +56,8 @@
             this.TimestampCH = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.LastOperationStatusCH = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.BtnLoadMI = new System.Windows.Forms.Button();
+            this.BtnSaveMI = new System.Windows.Forms.Button();
             this.LbConnectionState = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.BtnDisconnect = new System.Windows.Forms.Button();
@@ -69,8 +71,6 @@
             this.BtnSettingsLoad = new System.Windows.Forms.Button();
             this.PgSettings = new System.Windows.Forms.PropertyGrid();
             this.TmBackWorker = new System.Windows.Forms.Timer(this.components);
-            this.BtnSaveMI = new System.Windows.Forms.Button();
-            this.BtnLoadMI = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.TpUnityCon.SuspendLayout();
             this.TpOPCua.SuspendLayout();
@@ -266,7 +266,7 @@
             this.AttributesLV.Location = new System.Drawing.Point(2, 2);
             this.AttributesLV.Margin = new System.Windows.Forms.Padding(2);
             this.AttributesLV.Name = "AttributesLV";
-            this.AttributesLV.Size = new System.Drawing.Size(560, 278);
+            this.AttributesLV.Size = new System.Drawing.Size(561, 278);
             this.AttributesLV.TabIndex = 0;
             this.AttributesLV.UseCompatibleStateImageBehavior = false;
             this.AttributesLV.View = System.Windows.Forms.View.Details;
@@ -361,6 +361,26 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(970, 43);
             this.panel1.TabIndex = 2;
+            // 
+            // BtnLoadMI
+            // 
+            this.BtnLoadMI.Location = new System.Drawing.Point(693, 5);
+            this.BtnLoadMI.Name = "BtnLoadMI";
+            this.BtnLoadMI.Size = new System.Drawing.Size(75, 23);
+            this.BtnLoadMI.TabIndex = 6;
+            this.BtnLoadMI.Text = "LoadMI";
+            this.BtnLoadMI.UseVisualStyleBackColor = true;
+            this.BtnLoadMI.Click += new System.EventHandler(this.BtnLoadMI_Click);
+            // 
+            // BtnSaveMI
+            // 
+            this.BtnSaveMI.Location = new System.Drawing.Point(612, 5);
+            this.BtnSaveMI.Name = "BtnSaveMI";
+            this.BtnSaveMI.Size = new System.Drawing.Size(75, 23);
+            this.BtnSaveMI.TabIndex = 5;
+            this.BtnSaveMI.Text = "SaveMI";
+            this.BtnSaveMI.UseVisualStyleBackColor = true;
+            this.BtnSaveMI.Click += new System.EventHandler(this.BtnSaveMI_Click);
             // 
             // LbConnectionState
             // 
@@ -505,25 +525,6 @@
             this.TmBackWorker.Enabled = true;
             this.TmBackWorker.Interval = 500;
             this.TmBackWorker.Tick += new System.EventHandler(this.TmBackWorker_Tick);
-            // 
-            // BtnSaveMI
-            // 
-            this.BtnSaveMI.Location = new System.Drawing.Point(612, 5);
-            this.BtnSaveMI.Name = "BtnSaveMI";
-            this.BtnSaveMI.Size = new System.Drawing.Size(75, 23);
-            this.BtnSaveMI.TabIndex = 5;
-            this.BtnSaveMI.Text = "SaveMI";
-            this.BtnSaveMI.UseVisualStyleBackColor = true;
-            this.BtnSaveMI.Click += new System.EventHandler(this.BtnSaveMI_Click);
-            // 
-            // BtnLoadMI
-            // 
-            this.BtnLoadMI.Location = new System.Drawing.Point(693, 5);
-            this.BtnLoadMI.Name = "BtnLoadMI";
-            this.BtnLoadMI.Size = new System.Drawing.Size(75, 23);
-            this.BtnLoadMI.TabIndex = 6;
-            this.BtnLoadMI.Text = "LoadMI";
-            this.BtnLoadMI.UseVisualStyleBackColor = true;
             // 
             // FrmMainPlc2Socket
             // 

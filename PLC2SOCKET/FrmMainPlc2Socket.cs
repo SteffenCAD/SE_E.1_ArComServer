@@ -22,6 +22,7 @@ namespace PLC2SOCKET
 {
     public partial class FrmMainPlc2Socket : Form
     {
+        private string configPathMi = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + "//ArComMi.xml";
         private string configPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + "//ArComSettings.xml";
 
         MSOCKET OpcSocket = new MSOCKET();
@@ -158,11 +159,12 @@ namespace PLC2SOCKET
 
         private void BtnSaveMI_Click(object sender, EventArgs e)
         {
-            OpcClient.Write("AR_alive",false);
-
-            OpcClient.saveSubscriptions();
+            OpcClient.Ui.SaveMonitoring(configPathMi);
         }
-
+        private void BtnLoadMI_Click(object sender, EventArgs e)
+        {
+            OpcClient.Ui.LoadMonitoring(configPathMi);
+        }
         #endregion
 
 
@@ -200,5 +202,7 @@ namespace PLC2SOCKET
                 LbConnectionState.ForeColor = Color.Red;
             }
         }
+
+
     }
 }

@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Opc.Ua;
 using Opc.Ua.Client;
 using DUR.OPCUA.EVENTS;
+using DUR.CONFIG;
+using Opc.Ua.Export;
 
 
 namespace DUR.OPCUA
@@ -85,8 +87,6 @@ namespace DUR.OPCUA
         }
 
         #region Menues
-
-
         private void Menu_AddItems()
         {
             this.BrowsingMenu = new System.Windows.Forms.ContextMenuStrip();
@@ -548,6 +548,35 @@ namespace DUR.OPCUA
             }
         }
 
+        public void Add_MonitorMI(monitoredItems_data mid)
+        {
+            foreach(monitoredItem_struct mis in mid.items)
+            {
+                ListViewItem item = CreateMonitoredItem(mis);
+
+                UaClient.m_subscription.ApplyChanges();
+
+                MonitoredItem monitoredItem = (MonitoredItem)item.Tag;
+
+                if (ServiceResult.IsBad(monitoredItem.Status.Error))
+                {
+                    item.SubItems[8].Text = monitoredItem.Status.Error.StatusCode.ToString();
+                }
+
+                item.SubItems.Add(monitoredItem.DisplayName);
+                item.SubItems[1].Text = monitoredItem.MonitoringMode.ToString();
+                item.SubItems[2].Text = monitoredItem.SamplingInterval.ToString();
+                item.SubItems[3].Text = DeadbandFilterToText(monitoredItem.Filter);
+
+                if (MonitoredItemsLV != null)
+                {
+                    MonitoredItemsLV.Columns[0].Width = -2;
+                    MonitoredItemsLV.Columns[1].Width = -2;
+                    MonitoredItemsLV.Columns[8].Width = -2;
+                }
+            }
+        }
+
         /// <summary>
         /// Creates the monitored item.
         /// </summary>
@@ -581,6 +610,66 @@ namespace DUR.OPCUA
             monitoredItem.DiscardOldest = true;
 
             monitoredItem.Notification += UaClient.m_monitoredItem_Notification;
+
+            UaClient.m_subscription.AddItem(monitoredItem);
+
+
+            // add the attribute name/value to the list view.
+            ListViewItem item = new ListViewItem(monitoredItem.ClientHandle.ToString());
+            monitoredItem.Handle = item;
+
+            item.SubItems.Add(monitoredItem.DisplayName);
+            item.SubItems.Add(monitoredItem.MonitoringMode.ToString());
+            item.SubItems.Add(monitoredItem.SamplingInterval.ToString());
+            item.SubItems.Add(DeadbandFilterToText(monitoredItem.Filter));
+            item.SubItems.Add(String.Empty);
+            item.SubItems.Add(String.Empty);
+            item.SubItems.Add(String.Empty);
+            item.SubItems.Add(String.Empty);
+
+            item.Tag = monitoredItem;
+
+            if (MonitoredItemsLV != null)
+            {
+                MonitoredItemsLV.Items.Add(item);
+            }
+
+            if (ServiceResult.IsBad(monitoredItem.Status.Error))
+            {
+                item.SubItems[8].Text = monitoredItem.Status.Error.StatusCode.ToString();
+            }
+            return item;
+        }
+
+        private ListViewItem CreateMonitoredItem(monitoredItem_struct mis)
+        {
+            if (UaClient.m_subscription == null)
+            {
+                UaClient.m_subscription = new Subscription(UaClient.m_session.DefaultSubscription);
+
+                UaClient.m_subscription.PublishingEnabled = true;
+                UaClient.m_subscription.PublishingInterval = 1000;
+                UaClient.m_subscription.KeepAliveCount = 10;
+                UaClient.m_subscription.LifetimeCount = 10;
+                UaClient.m_subscription.MaxNotificationsPerPublish = 1000;
+                UaClient.m_subscription.Priority = 100;
+
+                UaClient.m_session.AddSubscription(UaClient.m_subscription);
+
+                UaClient.m_subscription.Create();
+            }
+
+            // add the new monitored item.
+            MonitoredItem monitoredItem = new MonitoredItem(UaClient.m_subscription.DefaultItem);
+
+            monitoredItem.StartNodeId       = NodeId.Parse(mis.StartNodeId);
+            monitoredItem.AttributeId       = mis.AttributeId;
+            monitoredItem.DisplayName       = mis.DisplayName;
+            monitoredItem.MonitoringMode    = (MonitoringMode)mis.MonitoringMode;
+            monitoredItem.SamplingInterval  = mis.SamplingInterval;
+            monitoredItem.QueueSize         = mis.QueueSize;
+            monitoredItem.DiscardOldest     = mis.DiscardOldest;
+
             monitoredItem.Notification += UaClient.m_monitoredItem_Notification;
 
             UaClient.m_subscription.AddItem(monitoredItem);
@@ -935,71 +1024,10 @@ namespace DUR.OPCUA
             }
         }
         #endregion
-        
-        /// <summary>
-        /// Converts a monitoring filter to text for display.
-        /// </summary>
-        /// <param name="filter">The filter.</param>
-        /// <returns>The deadback formatted as a string.</returns>
-        private string DeadbandFilterToText(MonitoringFilter filter)
-        {
-            DataChangeFilter datachangeFilter = filter as DataChangeFilter;
 
-            if (datachangeFilter != null)
-            {
-                if (datachangeFilter.DeadbandType == (uint)DeadbandType.Absolute)
-                {
-                    return Utils.Format("{0:##.##}", datachangeFilter.DeadbandValue);
-                }
 
-                if (datachangeFilter.DeadbandType == (uint)DeadbandType.Percent)
-                {
-                    return Utils.Format("{0:##.##}%", datachangeFilter.DeadbandValue);
-                }
-            }
 
-            return "None";
-        }
-
-        /// <summary>
-        /// Ensures the correct node is selected before displaying the context menu.
-        /// </summary>
-        private void BrowseNodesTV_MouseDown(object sender, MouseEventArgs e)
-        {
-            try
-            {
-               BrowseNodesTV.SelectedNode = BrowseNodesTV.GetNodeAt(e.X, e.Y);
-            }
-            catch (Exception exception)
-            {
-                //ClientUtils.HandleException(this.Text, exception);
-            }
-        }
-
-        /// <summary>
-        /// Updates the display after a node is selected.
-        /// </summary>
-        private void BrowseNodesTV_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            try
-            {
-                // get the source for the node.
-                ReferenceDescription reference = e.Node.Tag as ReferenceDescription;
-
-                if (reference == null || reference.NodeId.IsAbsolute)
-                {
-                    return;
-                }
-
-                // populate children.
-                PopulateBranch((NodeId)reference.NodeId, e.Node.Nodes);
-            }
-            catch (Exception exception)
-            {
-                //ClientUtils.HandleException(this.Text, exception);
-            }
-        }
-
+        #region functions
         /// <summary>
         /// Populates the branch in the tree view.
         /// </summary>
@@ -1229,6 +1257,73 @@ namespace DUR.OPCUA
         }
 
         /// <summary>
+        /// Converts a monitoring filter to text for display.
+        /// </summary>
+        /// <param name="filter">The filter.</param>
+        /// <returns>The deadback formatted as a string.</returns>
+        private string DeadbandFilterToText(MonitoringFilter filter)
+        {
+            DataChangeFilter datachangeFilter = filter as DataChangeFilter;
+
+            if (datachangeFilter != null)
+            {
+                if (datachangeFilter.DeadbandType == (uint)DeadbandType.Absolute)
+                {
+                    return Utils.Format("{0:##.##}", datachangeFilter.DeadbandValue);
+                }
+
+                if (datachangeFilter.DeadbandType == (uint)DeadbandType.Percent)
+                {
+                    return Utils.Format("{0:##.##}%", datachangeFilter.DeadbandValue);
+                }
+            }
+
+            return "None";
+        }
+        #endregion
+
+
+        /// <summary>
+        /// Ensures the correct node is selected before displaying the context menu.
+        /// </summary>
+        private void BrowseNodesTV_MouseDown(object sender, MouseEventArgs e)
+        {
+            try
+            {
+               BrowseNodesTV.SelectedNode = BrowseNodesTV.GetNodeAt(e.X, e.Y);
+            }
+            catch (Exception exception)
+            {
+                //ClientUtils.HandleException(this.Text, exception);
+            }
+        }
+
+        /// <summary>
+        /// Updates the display after a node is selected.
+        /// </summary>
+        private void BrowseNodesTV_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            try
+            {
+                // get the source for the node.
+                ReferenceDescription reference = e.Node.Tag as ReferenceDescription;
+
+                if (reference == null || reference.NodeId.IsAbsolute)
+                {
+                    return;
+                }
+
+                // populate children.
+                PopulateBranch((NodeId)reference.NodeId, e.Node.Nodes);
+            }
+            catch (Exception exception)
+            {
+                //ClientUtils.HandleException(this.Text, exception);
+            }
+        }
+
+
+        /// <summary>
         /// Fetches the children for a node the first time the node is expanded in the tree view.
         /// </summary>
         private void BrowseNodesTV_BeforeExpand(object sender, TreeViewCancelEventArgs e)
@@ -1300,5 +1395,62 @@ namespace DUR.OPCUA
         }
 
 
+        public void SaveMonitoring(string Path = null)
+        {
+            monitoredItems_data mid = new monitoredItems_data();
+
+            foreach (MonitoredItem monitoredItem in UaClient.m_subscription.MonitoredItems)
+            {
+                monitoredItem_struct mis = new monitoredItem_struct();
+                mis.StartNodeId         = monitoredItem.StartNodeId.ToString();
+                mis.AttributeId         = monitoredItem.AttributeId;
+                mis.DisplayName         = monitoredItem.DisplayName;
+                mis.MonitoringMode      = (uint)monitoredItem.MonitoringMode;
+                mis.SamplingInterval    = monitoredItem.SamplingInterval;
+                mis.QueueSize           = monitoredItem.QueueSize;
+                mis.DiscardOldest       = monitoredItem.DiscardOldest;
+
+                DataChangeFilter mf = (DataChangeFilter)monitoredItem.Filter;
+                if(mf != null)
+                {
+                    mis.Filer_Trigger = (uint)mf.Trigger;
+                    mis.Filer_DeadbandType = (uint)mf.DeadbandType;
+                    mis.Filer_DeadbandValue = (uint)mf.DeadbandValue;
+                }
+                mid.items.Add(mis);
+            }
+            mid.save(Path);
+        }
+
+        public void LoadMonitoring(string Path = null)
+        {
+            monitoredItems_data mid = new monitoredItems_data();
+
+            mid = (monitoredItems_data)mid.load(Path,typeof(monitoredItems_data));
+
+            Add_MonitorMI(mid);
+        }
+    }
+
+
+    public class monitoredItems_data : Mconfig
+    {
+        public List<monitoredItem_struct> items = new List<monitoredItem_struct> ();
+    }
+
+    [Serializable]
+    public class monitoredItem_struct
+    {
+        public string StartNodeId { get; set; }
+        public uint AttributeId { get; set; }
+        public string DisplayName { get; set; }
+        public uint MonitoringMode { get; set; }
+        public int SamplingInterval { get; set; }
+        public uint QueueSize { get; set; }
+        public bool DiscardOldest { get; set; }
+
+        public uint Filer_Trigger { get; set; }
+        public uint Filer_DeadbandType { get; set; }
+        public uint Filer_DeadbandValue { get; set; }
     }
 }
