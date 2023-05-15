@@ -13,7 +13,9 @@ using DUR.RTBLOGGER;
 using DUR.SOCKETS;
 using DUR.CONFIG;
 using DUR.OPCUA;
+using AR.COM.ROUTING;
 using AR.COM.DATA;
+using static System.Windows.Forms.AxHost;
 
 
 namespace PLC2SOCKET
@@ -27,13 +29,13 @@ namespace PLC2SOCKET
 
         Mconfig config = new Mconfig();
 
-        private AR.COM.DATA.Settings Einstellungen = new AR.COM.DATA.Settings();
+        private AR.COM.DATA.Settings AppSettings = new AR.COM.DATA.Settings();
 
         private AR.COM.DATA.OPCua OpcControl = new AR.COM.DATA.OPCua();
+        private OPCROUTING opcrouting;
 
         //OPCua client
         UaClient OpcClient = null;
-        UaUi OpcUi = new UaUi();
 
         public FrmMainPlc2Socket()
         {
@@ -48,28 +50,29 @@ namespace PLC2SOCKET
             //do application setting stuff
 
             //handle Settings
-            Einstellungen = (AR.COM.DATA.Settings)config.load(configPath,typeof(AR.COM.DATA.Settings), true);
-            Einstellungen.PropertyChanged += Einstellungen_PropertyChanged;
+            AppSettings = (AR.COM.DATA.Settings)config.load(configPath,typeof(AR.COM.DATA.Settings), true);
+            AppSettings.PropertyChanged += Einstellungen_PropertyChanged;
 
-            PgSettings.SelectedObject = Einstellungen;
-            TbOpcAddress.Text = Einstellungen.Opc_ServerAddress;
-
-
-
-            OpcControl.PropertyChanged += OpcControl_PropertyChanged;
+            PgSettings.SelectedObject = AppSettings;
+            TbOpcAddress.Text = AppSettings.Opc_ServerAddress;
 
             //init socket
-            OpcSocket.init(Einstellungen.Socket_IP_SENDING, Einstellungen.Socket_IP_RECEIVING, (int)Einstellungen.Socket_PORT_SENDING, (int)Einstellungen.Socket_PORT_RECEIVING, logger);
-
-            //connect socket to data objects
-            OpcControl.PropertyToSend += OpcSocket.PropertyToSend;
-            OpcSocket.SocketReceived += OpcControl.SocketReceived;
+            OpcSocket.init(AppSettings.Socket_IP_SENDING, AppSettings.Socket_IP_RECEIVING, (int)AppSettings.Socket_PORT_SENDING, (int)AppSettings.Socket_PORT_RECEIVING, logger);
 
             //start socket
-            OpcSocket.start();
+            if (AppSettings.Socket_Autoconnect)
+            {
+                OpcSocket.start();
+            }
+
+            //OPCua Client
+            OpcClient = new UaClient(AppSettings.Opc_AppName,AppSettings.Opc_ServerAddress, AppSettings.Opc_UseSecurity, AppSettings.Opc_Untrusted);
+
+            if(AppSettings.Opc_Autoconnect)
+            {
+                OpcConnect();
+            }
         }
-
-
 
         private void BtnSendString_Click(object sender, EventArgs e)
         {
@@ -95,14 +98,14 @@ namespace PLC2SOCKET
 
         private void Settings_Save()
         {
-            Einstellungen = (AR.COM.DATA.Settings)PgSettings.SelectedObject;
-            Einstellungen.save(configPath);
+            AppSettings = (AR.COM.DATA.Settings)PgSettings.SelectedObject;
+            AppSettings.save(configPath);
         }
 
         private void Settings_load()
         {
-            Einstellungen = (AR.COM.DATA.Settings)config.load(configPath, typeof(AR.COM.DATA.Settings), true);
-            PgSettings.SelectedObject = Einstellungen;
+            AppSettings = (AR.COM.DATA.Settings)config.load(configPath, typeof(AR.COM.DATA.Settings), true);
+            PgSettings.SelectedObject = AppSettings;
         }
 
         #endregion
@@ -110,32 +113,92 @@ namespace PLC2SOCKET
         #region OPCua
         private void BtnConnect_Click(object sender, EventArgs e)
         {
-            //check if OpcClient is not connected 
-            if(OpcClient == null)
-            {
-                OpcClient = new UaClient("ARcomServer", "opc.tcp://wem1-l07476:62640/IntegrationObjects/ServerSimulator", false,true);
-                OpcClient.Connect();
-
-                OpcUi.connect(OpcClient, BrowseNodesTV, AttributesLV);
-
-                OpcClient.Read("AR_alive");
-            }
+            OpcConnect();
         }
 
         private void BtnDisconnect_Click(object sender, EventArgs e)
         {
-
+            OpcDisconnect();
         }
-        private void OpcControl_PropertyChanged(object sender, PropertyChangedEventArgs e)
+
+        private void OpcConnect()
         {
-            throw new NotImplementedException();
+            try
+            {
+                //check if OpcClient is not connected 
+                if (OpcClient != null)
+                {
+                    OpcClient.Disconnect();
+                }
+
+                OpcClient = new UaClient(AppSettings.Opc_AppName, AppSettings.Opc_ServerAddress, AppSettings.Opc_UseSecurity, AppSettings.Opc_Untrusted);
+                OpcClient.Connect();
+                OpcClient.ScanTagsByFolder("Realtimedata");
+
+                OpcClient.Ui.connect(OpcClient, BrowseNodesTV, AttributesLV, MonitoredItemsLV);
+
+                //connect socket to data objects
+                opcrouting = new OPCROUTING(OpcClient, OpcSocket);
+            }
+            catch(Exception ex)
+            {
+                logger.Error("could not connect to OpcUA server \n" + ex);
+            }
+        }
+
+        private void OpcDisconnect()
+        {
+            OpcClient.Disconnect();
+        }
+
+        private void TbOpcAddress_TextChanged(object sender, EventArgs e)
+        {
+            AppSettings.Opc_ServerAddress = TbOpcAddress.Text;
+        }
+
+        private void BtnSaveMI_Click(object sender, EventArgs e)
+        {
+            OpcClient.Write("AR_alive",false);
+
+            OpcClient.saveSubscriptions();
         }
 
         #endregion
 
-        private void TbOpcAddress_TextChanged(object sender, EventArgs e)
+
+        #region Socket
+        private void BtnSocketOpen_Click(object sender, EventArgs e)
         {
-            Einstellungen.Opc_ServerAddress = TbOpcAddress.Text;
+            OpcSocket.start();
+        }
+
+        private void BtnSocketClose_Click(object sender, EventArgs e)
+        {
+            OpcSocket.stop();
+        }
+
+        #endregion
+
+        private void TmBackWorker_Tick(object sender, EventArgs e)
+        {
+            if (OpcClient != null)
+            {
+                if (OpcClient.IsConnected)
+                {
+                    LbConnectionState.Text = "CONNECTED";
+                    LbConnectionState.ForeColor = Color.Green;
+                }
+                else
+                {
+                    LbConnectionState.Text = "DISCONNECTED";
+                    LbConnectionState.ForeColor = Color.Red;
+                }
+            }
+            else
+            {
+                LbConnectionState.Text = "DISCONNECTED";
+                LbConnectionState.ForeColor = Color.Red;
+            }
         }
     }
 }

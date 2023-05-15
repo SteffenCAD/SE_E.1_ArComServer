@@ -122,7 +122,7 @@ namespace DUR.SOCKETS
                     data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
 
                     _LOGGER.Info("SOCKET | recieved data from: " + _IP_RECEIVE.ToString() + " " + data);
-                    //SocketReceived(data);
+                    SocketReceived(data);
 
                     //send response
                     //byte[] msg = Encoding.ASCII.GetBytes("ACK");
@@ -144,6 +144,7 @@ namespace DUR.SOCKETS
                 {
                     try
                     {
+                        _LOGGER.Info("SOCKET | sending: " + DataToSend[0]);
                         SocketSender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                         byte[] msg = Encoding.ASCII.GetBytes(DataToSend[0]);
                         SocketSender.Connect(SocketEnpoint);
@@ -154,10 +155,9 @@ namespace DUR.SOCKETS
                     catch(Exception ex)
                     {
                         _LOGGER.Error("SOCKET | sending error: " + ex.ToString());
-                        
                     }
-
                 }
+                Thread.Sleep(100);
             }
         }
         public void sendString(string data)

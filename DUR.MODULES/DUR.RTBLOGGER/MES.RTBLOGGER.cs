@@ -74,9 +74,7 @@ namespace DUR.RTBLOGGER
                     }
                 }
             }
-
         }
-
 
         public void Info(string text, bool big = false)
         {

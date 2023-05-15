@@ -37,7 +37,7 @@ namespace DUR.DATA
 
                     if (value != null)
                     {
-                        object result = Convert.ChangeType(value,propInfo.PropertyType,null);
+                        object result = Convert.ChangeType(value,propInfo.PropertyType, null);
                         propInfo.SetValue(this, result);
                     }
                 }

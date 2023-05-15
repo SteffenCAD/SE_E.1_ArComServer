@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DATA\AR.COM.DATA.cs" />
+    <Compile Include="DATA\AR.COM.ROUTING.cs" />
     <Compile Include="DATA\AR.COM.SETTINGS.cs" />
     <Compile Include="DATA\MES.DATA.JSONparser.cs" />
     <Compile Include="FrmMainPlc2Socket.cs">
