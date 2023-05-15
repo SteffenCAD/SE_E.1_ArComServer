@@ -144,7 +144,7 @@ namespace DUR.OPCUA
                     },
                     TransportConfigurations = new TransportConfigurationCollection(),
                     TransportQuotas = new TransportQuotas { OperationTimeout = 20000 },
-                    ClientConfiguration = new ClientConfiguration { DefaultSessionTimeout = 5000 },
+                    ClientConfiguration = new ClientConfiguration { DefaultSessionTimeout = 30000 },
                     TraceConfiguration = new TraceConfiguration
                     {
                         DeleteOnLoad = true,
@@ -197,7 +197,7 @@ namespace DUR.OPCUA
         /// Sets whether to try to connect to the server in case the connection is lost.
         /// </param>
         /// <exception cref="ServerException"></exception>
-        public void Connect(uint timeOut = 5, bool keepAlive = false)
+        public void Connect(uint timeOut = 30, bool keepAlive = false)
         {
             this.Disconnect();
 
@@ -283,12 +283,12 @@ namespace DUR.OPCUA
             }
         }
 
-        public void ScanTagsByFolder(string Folder)
+        public void ScanTagsByFolder(string Folder, ushort ns = 2)
         {
             // find all of the components of the node.
             BrowseDescription nodeToBrowse1 = new BrowseDescription();
 
-            nodeToBrowse1.NodeId = new NodeId(Folder,2);
+            nodeToBrowse1.NodeId = new NodeId(Folder, ns);
             nodeToBrowse1.BrowseDirection = BrowseDirection.Forward;
             nodeToBrowse1.ReferenceTypeId = ReferenceTypeIds.Aggregates;
             nodeToBrowse1.IncludeSubtypes = true;
@@ -298,7 +298,7 @@ namespace DUR.OPCUA
             // find all nodes organized by the node.
             BrowseDescription nodeToBrowse2 = new BrowseDescription();
 
-            nodeToBrowse2.NodeId = new NodeId(Folder, 2);
+            nodeToBrowse2.NodeId = new NodeId(Folder, ns);
             nodeToBrowse2.BrowseDirection = BrowseDirection.Forward;
             nodeToBrowse2.ReferenceTypeId = ReferenceTypeIds.Organizes;
             nodeToBrowse2.IncludeSubtypes = true;
@@ -336,7 +336,7 @@ namespace DUR.OPCUA
 
             foreach(ReferenceDescription TagAddress in this.TagBook)
             {
-                if(TagAddress.BrowseName.Name.Contains(Name) || TagAddress.BrowseName.ToString() == Name)
+                if(TagAddress.BrowseName.Name.Contains(Name) || TagAddress.BrowseName.ToString() == Name || TagAddress.DisplayName.Text.Equals(Name))
                 {
                     retTag = TagAddress;
                     break;

@@ -132,9 +132,9 @@ namespace PLC2SOCKET
                     OpcClient.Disconnect();
                 }
 
-                OpcClient = new UaClient(AppSettings.Opc_AppName, AppSettings.Opc_ServerAddress, AppSettings.Opc_UseSecurity, AppSettings.Opc_Untrusted);
-                OpcClient.Connect();
-                OpcClient.ScanTagsByFolder("Realtimedata");
+                OpcClient = new UaClient("ArComServer", AppSettings.Opc_ServerAddress, AppSettings.Opc_UseSecurity, AppSettings.Opc_Untrusted);
+                OpcClient.Connect(30);
+                OpcClient.ScanTagsByFolder("ServerInterfaces",3);
 
                 OpcClient.Ui.connect(OpcClient, BrowseNodesTV, AttributesLV, MonitoredItemsLV);
 

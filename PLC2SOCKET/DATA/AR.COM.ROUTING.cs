@@ -66,7 +66,7 @@ namespace AR.COM.ROUTING
         {
             //disable sending if data is received from node red
             this.enablePropertyToSend = false;
-            data.Trim(new Char[] { ' ', '{', '}' });
+            data = data.Trim(new Char[] { ' ', '{', '}' });
 
             string[] vars = data.Split(',');
 
