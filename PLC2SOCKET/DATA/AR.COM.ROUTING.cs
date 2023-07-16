@@ -1,12 +1,10 @@
-﻿using DUR.DATA;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-
 using DUR.OPCUA;
 using DUR.SOCKETS;
 using System.Net.Sockets;
@@ -51,10 +49,14 @@ namespace AR.COM.ROUTING
         {
             while(RecivedData.Count != 0)
             {
-                object value = ChangeType(RecivedData[0].value, RecivedData[0].type);
-                _uaClient.Write(RecivedData[0].name, value);
+                try
+                {
+                    object value = ChangeType(RecivedData[0].value, RecivedData[0].type);
+                    _uaClient.Write(RecivedData[0].name, value);
 
-                RecivedData.RemoveAt(0);
+                    RecivedData.RemoveAt(0);
+                }
+                catch { }
             }
         }
 

@@ -121,7 +121,7 @@ namespace DUR.SOCKETS
                     // Translate data bytes to a ASCII string.
                     data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
 
-                    _LOGGER.Info("SOCKET | recieved data from: " + _IP_RECEIVE.ToString() + " " + data);
+                    _LOGGER.Info("SOCKET | recieved data from: " + _IP_SEND.ToString() + " " + data);
                     SocketReceived(data);
 
                     //send response

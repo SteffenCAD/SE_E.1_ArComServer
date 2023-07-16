@@ -55,7 +55,6 @@ namespace PLC2SOCKET
             AppSettings.PropertyChanged += Einstellungen_PropertyChanged;
 
             PgSettings.SelectedObject = AppSettings;
-            TbOpcAddress.Text = AppSettings.Opc_ServerAddress;
 
             //init socket
             OpcSocket.init(AppSettings.Socket_IP_SENDING, AppSettings.Socket_IP_RECEIVING, (int)AppSettings.Socket_PORT_SENDING, (int)AppSettings.Socket_PORT_RECEIVING, logger);
@@ -134,7 +133,8 @@ namespace PLC2SOCKET
 
                 OpcClient = new UaClient("ArComServer", AppSettings.Opc_ServerAddress, AppSettings.Opc_UseSecurity, AppSettings.Opc_Untrusted);
                 OpcClient.Connect(30);
-                OpcClient.ScanTagsByFolder("ServerInterfaces",3);
+                //OpcClient.ScanTagsByFolder("ServerInterfaces",3);
+                OpcClient.ScanTagsByFolder("PLC", 3);
 
                 OpcClient.Ui.connect(OpcClient, BrowseNodesTV, AttributesLV, MonitoredItemsLV);
 
@@ -150,11 +150,6 @@ namespace PLC2SOCKET
         private void OpcDisconnect()
         {
             OpcClient.Disconnect();
-        }
-
-        private void TbOpcAddress_TextChanged(object sender, EventArgs e)
-        {
-            AppSettings.Opc_ServerAddress = TbOpcAddress.Text;
         }
 
         private void BtnSaveMI_Click(object sender, EventArgs e)
